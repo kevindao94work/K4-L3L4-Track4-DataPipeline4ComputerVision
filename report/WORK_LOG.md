@@ -22,3 +22,9 @@
 - `step 2`, `exp break-gate`, `verify --module 2`: đạt 7/7 sau phục hồi.
 - Mỗi drive cách ly 20 trùng, 30 thiếu tốc độ, 3 ngoài khoảng; sạch A 2.968, B 3.181.
 - Gate bắt 6 dòng bằng in_range; sau khôi phục ERROR=0, WARN=1. B bắt đầu 14:30:00.009 UTC.
+
+## Checkpoint 3 — Silver frames
+
+- `step 3`, `test`, `exp idempotency`, `exp threshold`, `verify --module 3`: 6/6 và 9 unit test đạt.
+- 26 trip, 1.246 khung; overwrite hai lần giữ fingerprint cb6118dbb0b8 và số dòng; append 60 → 120.
+- dHash 0/2/6: A 60/149/363; B 8/52/244. Gap trung bình 66/73 ms, tối đa 2.884/3.112 ms.

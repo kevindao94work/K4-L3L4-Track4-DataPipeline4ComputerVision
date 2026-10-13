@@ -56,18 +56,25 @@ Sau khôi phục: PASS=6 WARN=1 ERROR=0 SKIP=0, verifier 7/7. Đây là bằng c
 ### Câu 4
 Dựa vào `idempotency.json`: số dòng trước và sau hai lần chạy lại, và khi ghi kiểu `append`. Vì sao Delta `overwrite` theo partition (một trip) an toàn hơn xoá rồi ghi lại, nhất là khi giữa chừng có lỗi?
 
-(trả lời ở đây)
+`idempotency.json` chọn `trip-00003` có 60 khung: toàn bảng trước và sau hai lần chạy lại đều 1.246 dòng, fingerprint đều `cb6118dbb0b8` (`unchanged=true`).
+Bảng thử ghi append hai lần có 120 dòng = 2 × 60: retry theo cách này sẽ nhân đôi dữ liệu.
+Delta overwrite có predicate `trip_id` thay thế đúng partition trong một commit giao dịch, giữ nguyên các trip khác và cho người đọc thấy snapshot nhất quán.
+Xoá rồi ghi là hai bước riêng: sập giữa hai bước có thể để lại partition rỗng; append khi retry có thể thêm bản sao. Đo đạc chứng minh retry không đổi nội dung; `_processed_at` được loại khỏi fingerprint vì là thời điểm xử lý.
 
 ### Câu 5
 Khung hình **đen** và khung hình **tối** khác nhau thế nào, pipeline xử lý khác nhau ra sao, bạn có đồng ý không? Dựa vào `threshold.json`: nếu chọn ngưỡng 0, 2, 6 thì bao nhiêu khung bị coi là trùng ở mỗi drive? Bạn chọn ngưỡng nào, vì sao, và ngưỡng đó phụ thuộc vào tốc độ xe thế nào?
 
 | dHash khác tối đa | số khung trùng, drive A | số khung trùng, drive B |
 |---|---|---|
-| 0 | | |
-| 2 | | |
-| 6 | | |
+| 0 | 60 | 8 |
+| 2 | 149 | 52 |
+| 6 | 363 | 244 |
 
-(trả lời ở đây)
+Có 1.246 khung từ 26 trip (A 602, B 644), mọi `frame_id` duy nhất; module 3 đạt 6/6 và 9/9 unit test.
+A có 6 đen, 9 mờ, 4 tối, 149 gần trùng, 7 mất đồng bộ; B có 4 đen, 0 mờ, 61 tối, 52 gần trùng, 7 mất đồng bộ (các cờ có thể chồng nhau).
+Trong cửa sổ thiếu sáng cấy vào B, 10/10 khung được gắn tối nhưng không đen: tôi đồng ý giữ khả năng dùng chúng, vì tối vẫn có cấu trúc; Gold còn xét mờ/trùng/đồng bộ, nên cờ tối không bảo đảm ảnh cuối cùng được giữ.
+Chọn ngưỡng 2 theo mặc định: 0 bỏ sót biến thể gần giống, 6 loại nhiều khung có thể khác cảnh. Xe chậm thường có thay đổi hình nhỏ, nhưng bảng ngưỡng chưa chứng minh quan hệ nhân quả với tốc độ; cần phân tầng theo tốc độ để hiệu chỉnh.
+ASOF nối event time với telemetry gần nhất trước đó; gap trung bình làm tròn A/B là 66/73 ms, tối đa 2.884/3.112 ms, cho thấy vẫn có đoạn mất tín hiệu.
 
 ## Bước 4 · Gold
 
