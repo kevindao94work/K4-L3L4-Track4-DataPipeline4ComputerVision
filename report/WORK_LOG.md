@@ -10,3 +10,9 @@
 - ZIP vốn được track trong starter; gỡ khỏi index, giữ bản cục bộ, thêm quy tắc ignore. Không sửa lịch sử cũ.
 - Cả ba dịch vụ healthy; container nhận đúng MSSV. `scripts/lab.sh step all --reset` và `scripts/lab.sh verify`: 27/27; Gold 1.020 khung, phiên bản `4bb2a3037896`.
 - Hash 3 file bảo vệ khớp; chưa sửa mã triển khai.
+
+## Checkpoint 1 — Bronze
+
+- `step 1 --reset`, `verify --module 1`: 5/5. A 3.021, B 3.234 dòng; 26 trip, 2 video.
+- Ingest lại A không thêm dòng; `history bronze.raw_telemetry_a`: một WRITE version 0, 3.021 dòng.
+- Offset A 0 ms, B 1.500 ms. Câu 1 đã ghi các khác biệt schema thực tế.
