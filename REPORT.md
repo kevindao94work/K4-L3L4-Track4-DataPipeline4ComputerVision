@@ -129,16 +129,54 @@ Bằng chứng: `airflow_graph.png`, `airflow_failed_graph.png`, `airflow_failed
 ### Câu 10
 Nâng từ 2 drive lên **500 xe mỗi ngày**: ba thành phần nào của pipeline này sẽ vỡ đầu tiên, và bạn thay bằng gì (nối với slide 12, 22, 23)?
 
-(trả lời ở đây)
+Lab thực tế chỉ có 2 drive, 26 trip, 1.246 khung lấy mẫu và 1.020 khung Gold; Docker cấp khoảng 7,65 GiB, Airflow LocalExecutor parallelism=2 và mapped extraction giới hạn 1 task/run. Dưới đây là dự báo thiết kế cho 500 xe/ngày, không phải benchmark 500 xe.
+(1) FFmpeg/IO extraction: mỗi task tải lại toàn video drive và giải mã theo trip; tăng xe làm lặp tải/giải mã. Dùng worker phân tán theo đoạn video, cache bản nguồn gần worker, giải mã một lần rồi chia partition; đổi lại phải quản lý retry, tài nguyên và tính xác định.
+(2) DuckDB/dbt + nạp Postgres một nút: nhiều tác vụ tranh chấp file cục bộ, RAM và thao tác thay bảng mart toàn phần. Dùng engine phân tán (Spark/Trino theo loại truy vấn), bảng lakehouse partition và mart cập nhật tăng dần; đổi lại tăng chi phí vận hành, cần kiểm tra lại ngữ nghĩa SQL và consistency.
+(3) MinIO/đường truyền và nhiều object JPEG nhỏ: 1.246 ảnh cùng Delta log/manifest đã tạo nhiều request; 500 xe có thể bão hoà request, băng thông và metadata trước khi đầy dung lượng. Dùng object storage mở rộng, ingest theo batch, đóng shard dữ liệu huấn luyện và giữ manifest ánh xạ ảnh; đổi lại giảm khả năng truy cập ngẫu nhiên từng JPEG trực tiếp.
+Theo các chủ đề ingestion, ELT và orchestration của slide 12/22/23, cần backpressure, hàng đợi/concurrency theo năng lực worker, giám sát latency/throughput và quality gate ở từng tầng. Chưa có slide đính kèm để đối chiếu nội dung từng số trang; các thay thế trên dựa vào topology/mã quan sát, không gán số đo giả cho slide.
 
 ## Câu hỏi riêng của bạn trên Metabase
 
 Câu SQL bạn thêm vào dashboard và điều nó cho biết:
 
-(trả lời ở đây)
+Dashboard thật: `http://localhost:3000/dashboard/2`; hai câu hỏi đã lưu và thực thi trạng thái `completed`, bằng chứng số trong `report/evidence/metabase_queries.json`.
+
+**1. Bao: frame retention by drive (card 46)**
+
+```sql
+select drive_id, frames_total, frames_kept, round(100.0 * frames_kept / nullif(frames_total, 0), 2) as kept_pct
+from marts.mart_frame_funnel
+order by drive_id;
+```
+
+A giữ 436/602 = 72,43%; B giữ 584/644 = 90,68%. Chênh 18,25 điểm phần trăm giúp ưu tiên kiểm tra nguồn A; tỷ lệ giữ không tự chứng minh mô hình học tốt hơn, và không cộng các cờ loại vì chúng có thể chồng nhau.
+
+**2. Bao: top 5 frame rejection trips (card 47)**
+
+```sql
+select drive_id, trip_id, frames, frames_kept,
+       round(100.0 * (frames - frames_kept) / nullif(frames, 0), 2) as dropped_pct
+from marts.mart_trip_summary
+order by dropped_pct desc, trip_id
+limit 5;
+```
+
+| Trip (đều drive_a) | Tổng frame | Giữ | Loại (%) |
+|---|---:|---:|---:|
+| trip-04622 | 60 | 26 | 56,67 |
+| trip-03904 | 22 | 11 | 50,00 |
+| trip-02086 | 60 | 32 | 46,67 |
+| trip-08888 | 60 | 36 | 40,00 |
+| trip-07774 | 34 | 21 | 38,24 |
+
+`trip-04622` là điểm ưu tiên xem footage/quality flags; kết quả này đo hợp của các nguyên nhân loại qua `frames - frames_kept`, chưa xác định riêng nguyên nhân của từng trip.
 
 ## Nhìn lại
 
 Điều bạn thấy bất ngờ nhất, điều gì còn chưa rõ, và một lỗi dữ liệu mà bạn nghĩ pipeline **chưa** bắt được (nếu có). Tối đa 8 dòng.
 
-(trả lời ở đây)
+Bất ngờ nhất là B có 61 khung tối nhưng không có khung mờ được gắn cờ; tối không đồng nghĩa ảnh vô dụng, và tỷ lệ giữ B vẫn 90,68%.
+Thí nghiệm retry làm rõ khác biệt giữa dữ liệu idempotent và trạng thái điều phối: partition đã sửa được, nhưng 7 downstream vẫn cần clear riêng.
+Tôi chưa chắc ngưỡng dHash 2 tối ưu cho mọi tốc độ/ánh sáng; bảng ngưỡng cho thấy đánh đổi, chưa có nhãn thủ công để đo false positive.
+Một lỗi có thể chưa được bắt là GPS nhảy vị trí hoặc camera bẩn nhưng vẫn đủ sáng/nét; đây là giả thuyết từ các luật hiện có, chưa được thử cấy lỗi.
+Cần thêm kiểm tra tính liên tục không gian–thời gian và đánh giá chất lượng bằng mẫu có nhãn trước khi áp dụng ngoài lab.

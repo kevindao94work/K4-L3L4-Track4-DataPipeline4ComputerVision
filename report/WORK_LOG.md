@@ -45,3 +45,11 @@
 - Retry không đổi 1.246 frame/fingerprint cb6118dbb0b8 hoặc dataset version 4bb2a3037896; verify 27/27.
 - Ảnh thật lấy bằng Playwright/Chrome headless sau khi native CUA lỗi ScreenCaptureKit; đã xem Graph và log chứa đúng trip.
 - Đã bỏ LAB_FAIL_ONCE, recreate Airflow, xác nhận MSSV gốc; không sửa mã đề.
+
+## Checkpoint 6 — BI và báo cáo
+
+- `docker compose --profile bi up -d`, `python3 scripts/setup_metabase.py`: dashboard 2 được tạo và đã mở thật.
+- Lưu/executed 2 câu hỏi riêng (card 46/47) lên dashboard: A giữ 72,43%, B 90,68%; trip-04622 loại 56,67% cao nhất. SQL và response ở metabase_queries.json.
+- Chụp và xem ảnh dashboard có hai câu hỏi; MinIO lake có bronze/gold/silver, ảnh thật được kiểm tra.
+- Đã điền 10 câu tiếng Việt, hai SQL, Nhìn lại 5 dòng; dự báo 500 xe được ghi rõ chưa benchmark.
+- 6 ảnh PNG thật; không còn placeholder trong REPORT.md.
