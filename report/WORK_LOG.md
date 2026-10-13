@@ -28,3 +28,10 @@
 - `step 3`, `test`, `exp idempotency`, `exp threshold`, `verify --module 3`: 6/6 và 9 unit test đạt.
 - 26 trip, 1.246 khung; overwrite hai lần giữ fingerprint cb6118dbb0b8 và số dòng; append 60 → 120.
 - dHash 0/2/6: A 60/149/363; B 8/52/244. Gap trung bình 66/73 ms, tối đa 2.884/3.112 ms.
+
+## Checkpoint 4 — Gold
+
+- `step 4`, hai `cli export-dataset`, `exp leakage`, `verify --module 4`: 7/7.
+- Cùng version 4bb2a3037896; 680/186/154 khung, 18/4/4 trip; A/B giữ 436/584 khung.
+- Chia frame làm 26/26 trip giao split và 26/26 giao train/test; chia trip có 0.
+- Đọc manifest thật: silver.frames version 27 sau thí nghiệm retry, Bronze raw version 0, video_files 1. Không thử đổi MSSV.

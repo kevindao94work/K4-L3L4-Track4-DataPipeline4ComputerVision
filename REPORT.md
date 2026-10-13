@@ -11,8 +11,8 @@
 
 ## Kết quả cuối
 
-- `dataset_version` của bạn: `<điền>`  (phải khớp `report/evidence/run_summary.json`)
-- Số khung hình train / val / test của bạn: `<điền>`
+- `dataset_version` của bạn: `4bb2a3037896`  (phải khớp `report/evidence/run_summary.json`)
+- Số khung hình train / val / test của bạn: **680 / 186 / 154** (tổng 1.020)
 - `report/verify.txt`: tạo bằng `python3 scripts/check_submission.py --save-verify` (phải có `27/27 checks passed`).
 - Ảnh chụp trong `report/screenshots/`: `airflow_graph.png`, `minio_lake.png`, `metabase_dashboard.png`, và ảnh bài tập sập/chạy lại (log task đỏ thấy trip của bạn).
 
@@ -81,17 +81,39 @@ ASOF nối event time với telemetry gần nhất trước đó; gap trung bìn
 ### Câu 6
 Dựa vào `leakage.json`: chia theo khung hình làm bao nhiêu trip bị chia cắt, so với chia theo trip? Vì sao điều này làm điểm kiểm thử đẹp một cách giả tạo?
 
-(trả lời ở đây)
+Thí nghiệm `leakage.json` dùng 1.020 khung hợp lệ thuộc 26 trip. Chia từng frame ngẫu nhiên 70/15/15 khiến 26 trip xuất hiện ở nhiều split, và cả 26 trip có mặt đồng thời ở train lẫn test.
+Gold chia theo trip có 0 trip bị chia cắt; từng drive đều có train, val, test, với tổng 18/4/4 trip tương ứng.
+Các khung lân cận cùng đường, ánh sáng và vật thể rất giống nhau; khi chia frame, mô hình có thể ghi nhớ cảnh đã thấy, làm điểm test cao mà không phản ánh khả năng khái quát sang chuyến mới.
+Đây là phép đo sự giao nhau của trip, chưa phải thí nghiệm huấn luyện đo mức tăng điểm; không suy ra một phần trăm cải thiện giả cụ thể.
 
 ### Câu 7
 Vì sao `dataset_version` là **băm nội dung** chứ không phải ngày giờ hay số đếm? Hai lần chạy liên tiếp cho kết quả gì? Vì sao `dataset_version` của bạn **khác** bạn bè dù cùng dữ liệu (liên hệ MSSV)?
 
-(trả lời ở đây)
+Hai lần `cli export-dataset` liên tiếp đều trả `4bb2a3037896`, 1.020 khung; train/val/test = 680/186/154 và SHA manifest parquet cùng `496d3785a82ea605ea40dc06591530a45808f1ec6e1e0998480f730df844f22f` tại checkpoint 4.
+Mã export băm SHA-256 của các cặp `frame_id|split` đã sắp xếp, lấy 12 ký tự; vì vậy thời điểm chạy không làm đổi version khi danh sách/nhãn split không đổi.
+Gold xếp trip trong từng drive bằng `md5(trip_id || LAB_STUDENT_ID)`; MSSV chính xác `2A202602793` là chuỗi, không cần ép số.
+Đổi MSSV có thể đổi thứ tự/split/version, nhưng không bảo đảm mọi MSSV đều cho version khác trên mẫu hữu hạn. Tôi không thực hiện thử đổi MSSV; bằng chứng ở đây là hai lần export và kiểm tra SQL, không phải một kết quả thử nghiệm đổi ID.
+Hash này nhận diện frame/split, không băm trực tiếp mọi pixel hoặc mọi nhãn telemetry; cần lineage và hash đầu vào để kiểm toán đầy đủ.
 
 ### Câu 8
 Đọc phần `lineage` trong `manifest.json` của dataset bạn. Trả lời "dataset này được tạo từ dữ liệu nào?" bằng chính nội dung đó. Nếu một người hỏi 3 tháng sau, thông tin nào giúp tái tạo lại đúng dataset này?
 
-(trả lời ở đây)
+Manifest của `4bb2a3037896` tại checkpoint 4 ghi lineage thực tế như bảng dưới; dữ liệu gốc có SHA-256:
+- A: `636ba1a98dfc5ba665d1c935e1d2064e69f4df360ff9ffbd15795957d5e7e9aa`.
+- B: `bfa62703f645ff77a8578ae3fc74a00881140d38a404d43c8e2af265bbee9fdc`.
+
+| Bảng đầu vào | Delta version checkpoint 4 |
+|---|---:|
+| bronze.raw_telemetry_a | 0 |
+| bronze.raw_telemetry_b | 0 |
+| bronze.trips_raw | 0 |
+| bronze.video_files | 1 |
+| silver.frames | 27 |
+| silver.telemetry | 0 |
+| silver.frames_flagged | 0 |
+| silver.frame_telemetry | 0 |
+
+Version Delta chỉ ra snapshot; hash video kiểm tra đúng byte nguồn; manifest frame/split và MSSV giúp tái tạo phân chia. Cần giữ gói nguồn, cấu hình, mã/phiên bản công cụ và Delta log cùng các data file, vì version riêng lẻ không khôi phục được dữ liệu đã xoá. Reset sẽ tạo lại số version nội bộ; bảng trên ghi rõ thời điểm quan sát, còn dataset_version vẫn ổn định khi frame/split giữ nguyên.
 
 ## Bước 5 · Điều phối và phục vụ
 
