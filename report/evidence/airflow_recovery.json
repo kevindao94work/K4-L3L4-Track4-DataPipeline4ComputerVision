@@ -1,0 +1,270 @@
+{
+  "student_id": "2A202602793",
+  "selection_rule": "int(student_id.upper(), 36) % len(sorted_trips)",
+  "base36_integer": 8333563383089463,
+  "trip_count": 26,
+  "map_index": 25,
+  "selected_trip": "trip-09608",
+  "normal_run_id": "lab-normal",
+  "failure_run_id": "lab-failure",
+  "normal_state": "success",
+  "before_clear": {
+    "upstream_failed": 7,
+    "success": 29,
+    "failed": 1
+  },
+  "after_single_clear": {
+    "upstream_failed": 7,
+    "success": 30
+  },
+  "cleared_first": [
+    {
+      "task_id": "silver_frames",
+      "map_index": 25
+    }
+  ],
+  "cleared_downstream": [
+    "publish_warehouse",
+    "dbt_run_silver",
+    "dbt_test_silver",
+    "dbt_run_gold",
+    "dbt_test_gold",
+    "publish_lake",
+    "export_dataset"
+  ],
+  "recovered": {
+    "success": 37
+  },
+  "recovered_state": "success",
+  "dataset_version_before": "4bb2a3037896",
+  "dataset_version_after": "4bb2a3037896",
+  "frames_before": 1246,
+  "frames_after": 1246,
+  "fingerprint_before": "cb6118dbb0b8",
+  "fingerprint_after": "cb6118dbb0b8",
+  "verify_checks_passed": 27,
+  "task_attempts": [
+    {
+      "task_id": "publish_warehouse",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 2,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 5,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 3,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 4,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 6,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "dbt_run_gold",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "bronze_drive_a",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "bronze_drive_b",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "bronze_trips",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "trip_commands",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 24,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 25,
+      "state": "success",
+      "try_number": 2
+    },
+    {
+      "task_id": "dbt_run_silver",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "dbt_test_silver",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "dbt_test_gold",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "publish_lake",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 0,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "export_dataset",
+      "map_index": -1,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 7,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 8,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 9,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 15,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 10,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 12,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 11,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 13,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 14,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 16,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 19,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 17,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 18,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 20,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 22,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 21,
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "silver_frames",
+      "map_index": 23,
+      "state": "success",
+      "try_number": 1
+    }
+  ]
+}

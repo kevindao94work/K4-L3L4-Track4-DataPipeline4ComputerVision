@@ -7,7 +7,7 @@
 | Họ và tên | Đào Gia Bảo |
 | MSSV (đúng bằng `LAB_STUDENT_ID` trong `.env`) | `2A202602793` |
 | GitHub | `kevindao94work` |
-| Trip dùng cho bài tập sập và chạy lại (xem GUIDE, bước 5) | `<điền: trip-xxxxx>` |
+| Trip dùng cho bài tập sập và chạy lại (xem GUIDE, bước 5) | `trip-09608` |
 
 ## Kết quả cuối
 
@@ -120,7 +120,11 @@ Version Delta chỉ ra snapshot; hash video kiểm tra đúng byte nguồn; mani
 ### Câu 9
 Mô tả chính xác điều xảy ra khi trip của bạn sập rồi chạy lại: bao nhiêu task chuyển đỏ, bao nhiêu task `upstream_failed`, bạn clear gì, dữ liệu có nhân đôi không, `dataset_version` có đổi không? Bằng chứng (ảnh, số) là gì?
 
-(trả lời ở đây)
+Vì MSSV chứa chữ, ví dụ `int(MSSV)` trong GUIDE không chạy được. Tôi dùng thích nghi công khai `int('2A202602793', 36) = 8333563383089463`, modulo 26 = 25; danh sách trip thực tế đã sắp xếp chọn `trip-09608` (không đổi MSSV). Đây không phải công thức chính thức cho MSSV chữ của giảng viên.
+DAG `lab-normal` từ lake trống thành công: 37 task instance, gồm 26 mapped frame task. Ở run `lab-failure`, đúng 1 task `silver_frames[25]` failed, 7 downstream `upstream_failed`, 29 task success.
+Tôi clear đúng mapped task lỗi trước bằng API Python `clear_task_instances` của Airflow; nó chạy lại thành công, nhưng 7 downstream vẫn upstream_failed (30 success/7 blocked). Sau đó clear riêng 7 downstream này; không clear 25 partition đã thành công.
+Kết quả cuối 37/37 success; verifier 27/27; 1.246 frame và fingerprint `cb6118dbb0b8` giống baseline, version vẫn `4bb2a3037896`, không nhân đôi dữ liệu. Warehouse có 6 mart, gallery 1.020 dòng bằng Gold.
+Bằng chứng: `airflow_graph.png`, `airflow_failed_graph.png`, `airflow_failed_task_log.png` thấy đúng trip, `airflow_recovered_graph.png`; số trạng thái và phạm vi clear nằm trong `airflow_recovery.json`. Tôi đã bỏ LAB_FAIL_ONCE và xác nhận container giữ MSSV gốc.
 
 ### Câu 10
 Nâng từ 2 drive lên **500 xe mỗi ngày**: ba thành phần nào của pipeline này sẽ vỡ đầu tiên, và bạn thay bằng gì (nối với slide 12, 22, 23)?

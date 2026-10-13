@@ -35,3 +35,13 @@
 - Cùng version 4bb2a3037896; 680/186/154 khung, 18/4/4 trip; A/B giữ 436/584 khung.
 - Chia frame làm 26/26 trip giao split và 26/26 giao train/test; chia trip có 0.
 - Đọc manifest thật: silver.frames version 27 sau thí nghiệm retry, Bronze raw version 0, video_files 1. Không thử đổi MSSV.
+
+## Checkpoint 5 — Warehouse và Airflow
+
+- `step 5`, `verify --module 5`: 2/2; sáu mart, gallery 1.020 dòng.
+- `day09_reset` success rồi `lab-normal` success (37 task instance); verify 27/27.
+- Base36 MSSV modulo 26 = 25 → trip-09608; adaptation vì ví dụ numeric của GUIDE không áp dụng.
+- Run lab-failure: 1 failed, 7 upstream_failed, 29 success. Clear duy nhất silver_frames[25] → 30 success/7 upstream_failed. Clear riêng 7 downstream bị chặn → 37 success.
+- Retry không đổi 1.246 frame/fingerprint cb6118dbb0b8 hoặc dataset version 4bb2a3037896; verify 27/27.
+- Ảnh thật lấy bằng Playwright/Chrome headless sau khi native CUA lỗi ScreenCaptureKit; đã xem Graph và log chứa đúng trip.
+- Đã bỏ LAB_FAIL_ONCE, recreate Airflow, xác nhận MSSV gốc; không sửa mã đề.
