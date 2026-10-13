@@ -16,3 +16,9 @@
 - `step 1 --reset`, `verify --module 1`: 5/5. A 3.021, B 3.234 dòng; 26 trip, 2 video.
 - Ingest lại A không thêm dòng; `history bronze.raw_telemetry_a`: một WRITE version 0, 3.021 dòng.
 - Offset A 0 ms, B 1.500 ms. Câu 1 đã ghi các khác biệt schema thực tế.
+
+## Checkpoint 2 — Silver telemetry
+
+- `step 2`, `exp break-gate`, `verify --module 2`: đạt 7/7 sau phục hồi.
+- Mỗi drive cách ly 20 trùng, 30 thiếu tốc độ, 3 ngoài khoảng; sạch A 2.968, B 3.181.
+- Gate bắt 6 dòng bằng in_range; sau khôi phục ERROR=0, WARN=1. B bắt đầu 14:30:00.009 UTC.

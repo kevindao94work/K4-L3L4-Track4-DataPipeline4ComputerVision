@@ -33,12 +33,23 @@ Ingest A lần thứ hai báo `already present`; lịch sử `bronze.raw_telemet
 ### Câu 2
 Pipeline đưa hai nguồn về một schema như thế nào (đơn vị, kiểu thời gian, **độ lệch đồng hồ**)? Bằng chứng nào trong kết quả bước 2 cho thấy đã đúng? Dán bảng quarantine của bạn (số dòng theo từng lý do, từng drive) và giải thích vì sao dòng lỗi vào `rejects` thay vì bị xoá.
 
-(trả lời ở đây)
+Staging A ép timestamp ISO sang UTC và tốc độ sang double; B đổi `spd_kmh / 3,6`, đổi epoch ms bằng `to_timestamp`, trừ offset 1.500 ms và chia bàn đạp phần trăm cho 100.
+B bắt đầu ở `2025-10-08 14:30:00.009 UTC`, lệch video chỉ 9 ms; module 2 đạt 7/7, không còn trùng `(drive_id, ts)` và mọi tốc độ trong 0–70 m/s.
+
+| Drive | duplicate | speed_missing | speed_out_of_range | Tổng cách ly | Dòng sạch |
+|---|---:|---:|---:|---:|---:|
+| drive_a | 20 | 30 | 3 | 53 | 2968 |
+| drive_b | 20 | 30 | 3 | 53 | 3181 |
+
+Bảo toàn: 2.968 + 53 = 3.021; 3.181 + 53 = 3.234. Quarantine giữ dòng và lý do để kiểm toán/sửa nguồn; xoá im lặng sẽ che mất mức độ lỗi và không thể đối chiếu số nhận vào.
 
 ### Câu 3
 Vì sao test `max_gap_ms` là `warn` còn `in_range` là `error`? Kết quả thí nghiệm `break-gate` của bạn (`break_gate.json`): test nào bắt được, bao nhiêu dòng, và điều đó cho biết gì về vai trò của "cổng chất lượng"?
 
-(trả lời ở đây)
+Test `max_gap_ms` (ngưỡng 1.000 ms) dùng severity `warn`: mất tín hiệu cần được theo dõi, nhưng khung không đủ đồng bộ có thể được gắn cờ và loại ở Gold.
+`in_range` là `error` vì tốc độ ngoài 0–70 m/s vi phạm hợp đồng dữ liệu và có thể làm sai nhãn huấn luyện.
+Trong `break_gate.json`, nới luật lên 1.000 m/s khiến `in_range_silver_telemetry_speed_mps__70__0` bắt đúng 6 dòng; dbt báo PASS=5 WARN=1 ERROR=1 SKIP=0.
+Sau khôi phục: PASS=6 WARN=1 ERROR=0 SKIP=0, verifier 7/7. Đây là bằng chứng test độc lập chặn dữ liệu sai dù bước làm sạch đã chấp nhận nó; WARN được giữ, không bị tắt để đạt kết quả.
 
 ## Bước 3 · Silver frames
 
