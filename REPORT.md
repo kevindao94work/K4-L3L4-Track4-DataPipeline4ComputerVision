@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| Họ và tên | `<điền>` |
-| MSSV (đúng bằng `LAB_STUDENT_ID` trong `.env`) | `<điền>` |
-| GitHub | `<điền: tên tài khoản>` |
+| Họ và tên | Đào Gia Bảo |
+| MSSV (đúng bằng `LAB_STUDENT_ID` trong `.env`) | `2A202602793` |
+| GitHub | `kevindao94work` |
 | Trip dùng cho bài tập sập và chạy lại (xem GUIDE, bước 5) | `<điền: trip-xxxxx>` |
 
 ## Kết quả cuối
