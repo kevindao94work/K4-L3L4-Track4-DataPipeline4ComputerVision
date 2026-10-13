@@ -53,3 +53,15 @@
 - Chụp và xem ảnh dashboard có hai câu hỏi; MinIO lake có bronze/gold/silver, ảnh thật được kiểm tra.
 - Đã điền 10 câu tiếng Việt, hai SQL, Nhìn lại 5 dòng; dự báo 500 xe được ghi rõ chưa benchmark.
 - 6 ảnh PNG thật; không còn placeholder trong REPORT.md.
+
+## Checkpoint 7 — Tái lập và kiểm tra cuối
+
+- `step all --reset` với đúng 2A202602793: 27/27, version 4bb2a3037896; 680/186/154 khung, 18/4/4 trip.
+- Chạy lại break-gate → idempotency → threshold → leakage; cả bốn trả ok=true, restore speed rule thành công. `verify` sau đó vẫn 27/27; lưu `report/verify.txt` bằng checker --save-verify và kiểm tra nội dung thực tế.
+- Audit parsed JSON: SID khớp cả năm file bắt buộc; count/fingerprint/append/gate/leak/threshold khớp REPORT. Phiên bản và split không đổi qua clean replay.
+- Manifest sau clean replay tham chiếu silver.frames version 25; báo cáo phân biệt rõ checkpoint 4 version 27 sau retry. Lưu nguyên manifest cuối (kèm MSSV) trong final_manifest.json.
+- Checker trước commit: 17/17 mục ổn, zero FAIL; chỉ WARN working tree còn thay đổi đang chuẩn bị commit.
+- So với starter c8e49c1, toàn bộ pipeline/dbt/dags/docker/scripts/tests/Compose không đổi; 3 protected hashes khớp. Không track .env, ZIP, CSV, video hay work output; work/.gitkeep là placeholder chuẩn của đề.
+- Xác nhận repo đích Public, kevindao94work; checkpoint 0–6 đều đã push và đối chiếu remote SHA trước khi sang bước kế tiếp.
+- Bằng chứng gồm 5 JSON bắt buộc, 3 JSON bổ sung (Airflow recovery, Metabase queries, final manifest), 6 screenshot thật.
+- Giới hạn được công khai: công thức base36 là adaptation cho MSSV chữ, không phải quy tắc chính thức numeric của GUIDE; bài retry cần clear thêm 7 downstream. Không nộp thay qua cổng môn học.

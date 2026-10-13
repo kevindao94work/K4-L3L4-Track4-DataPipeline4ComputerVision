@@ -1,7 +1,7 @@
 {
   "experiment": "leakage",
   "student_id": "2A202602793",
-  "ran_at": "2026-10-13T15:13:06.240955+00:00",
+  "ran_at": "2026-10-13T15:30:33.488142+00:00",
   "kept_frames": 1020,
   "trips": 26,
   "per_frame_split_trips_straddling": 26,

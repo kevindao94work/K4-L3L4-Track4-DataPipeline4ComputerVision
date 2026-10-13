@@ -102,18 +102,18 @@ Manifest của `4bb2a3037896` tại checkpoint 4 ghi lineage thực tế như b�
 - A: `636ba1a98dfc5ba665d1c935e1d2064e69f4df360ff9ffbd15795957d5e7e9aa`.
 - B: `bfa62703f645ff77a8578ae3fc74a00881140d38a404d43c8e2af265bbee9fdc`.
 
-| Bảng đầu vào | Delta version checkpoint 4 |
-|---|---:|
-| bronze.raw_telemetry_a | 0 |
-| bronze.raw_telemetry_b | 0 |
-| bronze.trips_raw | 0 |
-| bronze.video_files | 1 |
-| silver.frames | 27 |
-| silver.telemetry | 0 |
-| silver.frames_flagged | 0 |
-| silver.frame_telemetry | 0 |
+| Bảng đầu vào | Delta version checkpoint 4 | Version sau clean replay cuối |
+|---|---:|---:|
+| bronze.raw_telemetry_a | 0 | 0 |
+| bronze.raw_telemetry_b | 0 | 0 |
+| bronze.trips_raw | 0 | 0 |
+| bronze.video_files | 1 | 1 |
+| silver.frames | 27 | 25 |
+| silver.telemetry | 0 | 0 |
+| silver.frames_flagged | 0 | 0 |
+| silver.frame_telemetry | 0 | 0 |
 
-Version Delta chỉ ra snapshot; hash video kiểm tra đúng byte nguồn; manifest frame/split và MSSV giúp tái tạo phân chia. Cần giữ gói nguồn, cấu hình, mã/phiên bản công cụ và Delta log cùng các data file, vì version riêng lẻ không khôi phục được dữ liệu đã xoá. Reset sẽ tạo lại số version nội bộ; bảng trên ghi rõ thời điểm quan sát, còn dataset_version vẫn ổn định khi frame/split giữ nguyên.
+Version Delta chỉ ra snapshot; hash video kiểm tra đúng byte nguồn; manifest frame/split và MSSV giúp tái tạo phân chia. Cần giữ gói nguồn, cấu hình, mã/phiên bản công cụ và Delta log cùng các data file, vì version riêng lẻ không khôi phục được dữ liệu đã xoá. Reset sẽ tạo lại số version nội bộ; bảng trên ghi rõ hai thời điểm quan sát, còn dataset_version vẫn ổn định khi frame/split giữ nguyên. Manifest cuối được lưu nguyên nội dung trong `report/evidence/final_manifest.json` (bọc kèm MSSV).
 
 ## Bước 5 · Điều phối và phục vụ
 
